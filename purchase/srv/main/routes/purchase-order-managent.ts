@@ -6,6 +6,11 @@ import { db } from "@/common/entities/db/models";
 import cds from "@sap/cds";
 
 export default (service: Service) => {
+  service.before('READ', 'PurchaseOrderHeaders', (request: Request) => {
+    if(request.user.is('ROLE_DUMMY_ADMIN')){
+      return request.reject(403,'Não autorizado.');
+    }
+  });
   service.after(
     "READ",
     "PurchaseOrderHeaders",

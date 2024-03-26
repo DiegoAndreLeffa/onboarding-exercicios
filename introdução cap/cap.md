@@ -815,3 +815,159 @@ O resultado nos mostra que o criador do pedido foi alterado com sucesso para *Lu
 - Lógica AFTER READ para Modificar Resultados
 
     - Implemente uma função after READ para a entidade Employees que modifica o campo email para mostrar apenas o domínio do email (após o @) nos resultados da leitura.
+  
+# Segurança e Autorização no CAP
+
+Vamos mergulhar na configuração de segurança e autorização em seu aplicativo SAP CAP, utilizando o arquivo .cdsrc.json como ponto de partida. Este módulo é essencial para garantir que apenas usuários autorizados acessem e manipulem dados específicos dentro do seu aplicativo. No CAP, proteger seu aplicativo contra acessos não autorizados é primordial. A segurança possui dois pilares principais: *autenticação* (a confirmação de quem você é) e *autorização* (o que você está permitido a fazer).
+
+## Configuração de segurança em aplicativos CAP
+
+No SAP Cloud Application Programming Model (CAP), a segurança é um aspecto fundamental que protege seu aplicativo contra acessos não autorizados. A configuração de segurança envolve dois componentes principais: autenticação (quem você é) e autorização (o que você pode fazer).
+
+Para este curso, utilizaremos uma configuração de segurança definida no arquivo .cdsrc.json, que permite uma rápida implementação de mecanismos de segurança em um ambiente de desenvolvimento local.
+
+Nas aulas anteriores nós já configuramos um usuário para fins de teste, o dummy:
+
+![Imagem de exemplo de modelos](./imgs/auth.png)
+
+
+- A autenticação básica é um método simples que requer nome de usuário e senha para acessar o aplicativo.
+
+- No nosso exemplo, o usuário *dummy* tem a senha *dummy* e a role *ROLE_DUMMY_ADMIN*, além de atributos específicos como *email* e *Groups*.
+
+## Entendendo roles
+
+Entenda roles como perfis de acesso. As roles são usadas para definir o que diferentes tipos de usuários podem fazer dentro do aplicativo. No nosso caso, temos a role *ROLE_DUMMY_ADMIN*. Imagine que precisamos restringir a criação de pedidos somente para um perfil específico como o ROLE_DUMMY_ADMIN. Caso o usuário logado tenha outra role, como, por exemplo, *ROLE_DUMMY_USER*, ele não poderá criar os pedidos de compra, somente visualizá-los.
+
+## Annotations
+
+Para definir as autorizações nos serviços, nos utilizamos o que chamamos de annotations. As annotations são como superpoderes, elas incrementam o comportamento de determinado recurso ou entidade. Elas são definidas iniciando pelo símbolo *@* seguidos do tipo de informação que queremos incluir para nossa entidade. Saiba mais sobre as annotations aqui.
+
+## @requires
+
+Para restringirmos um determinado comportamento para determinado serviço ou entidade, nós utilizamos a annotation *@requires*. Se quisermos restringir, por exemplo, que nosso serviço seja acessível somente por usuários que estejam logados, anotamos nosso serviço com *@requires: 'authenticated-user'*:
+
+![Imagem de exemplo de modelos](./imgs/auth1.png)
+
+Após essa configuração, se tentarmos acessar nossa rota de find-all, perceberemos que o CAP retornará um erro, pois não informamos quem somos para ele.
+
+![Imagem de exemplo de modelos](./imgs/auth2.png)
+
+Precisamos informar no insomnia a autenticação básica que configuramos dentro do nosso arquivo *.cdsrc.json*
+
+![Imagem de exemplo de modelos](./imgs/auth3.png)
+
+Após isso a request deve funcionar normalmente:
+
+![Imagem de exemplo de modelos](./imgs/auth4.png)
+
+## @restrict
+
+Essa annotation nos permite entrar um pouco mais no detalhe de como queremos exibir determinado recurso ou entidade. Se quisermos, por exemplo, restringir o acesso de *CRUD* completo somente para nosso usuário *ROLE_DUMMY_ADMIN*, podemos fazer o seguinte:
+
+```Typescript
+using { db.models } from '../../../db/models';
+
+@requires: 'authenticated-user'
+service PurchaseOrderManagementService {
+    @(restrict: [{ grant: ['READ', 'CREATE', 'UPDATE', 'DELETE'], to: 'ROLE_DUMMY_ADMIN' }])
+    entity PurchaseOrderHeaders as projection on models.PurchaseOrderHeaders;
+    entity PurchaseOrderItems   as projection on models.PurchaseOrderItems;
+}
+```
+
+Perceba que a anotação está sendo aplicada somente para a entidade *PurchaseOrderHeaders*. Se quisermos aplicar para a entidade *PurchaseOrderItems* precisaríamos criar a mesma lógica de restrict para ela. 
+
+Note que tudo continuou funcionando normalmente para nosso usuário *dummy*. 
+
+![Imagem de exemplo de modelos](./imgs/auth5.png)
+
+Para fins de teste, vamos remover o privilégio de *READ* do nosso restrict e testar novamente o método *find-all*
+
+![Imagem de exemplo de modelos](./imgs/auth6.png)
+
+Agora vemos que estamos recebendo um erro *403 Forbidden*. Isto ocorre porque não temos mais direito de ler essa entidade.
+
+![Imagem de exemplo de modelos](./imgs/auth7.png)
+
+Porém a criação continua funcionando normalmente
+
+![Imagem de exemplo de modelos](./imgs/auth8.png)
+
+Uma outra maneira de implementar essa restrição é executar um handler para cada entidade que queremos restringir o acesso. Para fins de exemplo, vamos remover o *@restrict* que criamos e colocar a seguinte lógica no arquivo *purchase-order-management.ts*:
+
+```Typescript
+service.before('READ', 'PurchaseOrderHeaders', (request: Request) => {
+    if (request.user.is('ROLE_DUMMY_DUMMY')) {
+        return request.reject(403, 'Não autorizado');
+    }
+});
+```
+
+![Imagem de exemplo de modelos](./imgs/auth9.png)
+
+Neste caso, quando o usuário acessar a rota *PurchaseOrderHeaders* estamos fazendo uma verificação se o usuário logado possui a role *ROLE_DUMMY_ADMIN* e se ele possuir, retornamos *403 Forbidden*.
+
+![Imagem de exemplo de modelos](./imgs/auth10.png)
+
+## @readonly
+
+Uma outra maneira de restringir os acessos é através da anotação *@readonly*, com ela somos capazes de permitir o acesso de somente leitura, bloqueando todo o restante do *CRUD*:
+
+![Imagem de exemplo de modelos](./imgs/auth11.png)
+
+Ao tentar acessar a rota de criação, perceberemos que não temos mais acesso:
+
+![Imagem de exemplo de modelos](./imgs/auth12.png)
+
+Uma prática bem comum para este cenário é criar um serviço de acesso comum que requer somente usuário autenticado (*@requires: 'authenticated-user'*) e um serviço de admin com as mesmas entidades expostas, mas com acesso total ao *CRUD*:
+
+```Typescript
+using { db.models } from '../../../db/models';
+
+@requires: 'authenticated-user'
+service PurchaseOrderManagementService {
+    @readonly entity PurchaseOrderHeaders as projection on models.PurchaseOrderHeaders;
+    @readonly entity PurchaseOrderItems   as projection on models.PurchaseOrderItems;
+}
+
+@requires: 'ROLE_DUMMY_ADMIN'
+service PurchaseOrderManagementAdminService {
+    entity PurchaseOrderHeaders as projection on models.PurchaseOrderHeaders;
+    entity PurchaseOrderItems   as projection on models.PurchaseOrderItems;
+}
+```
+
+![Imagem de exemplo de modelos](./imgs/auth13.png)
+
+Primeiro, vamos rodar novamente o comando *npm run seed* no terminal.
+
+Depois, no insomnia, vamos alterar nossa chamada do método create de */purchase-order-management/PurchaseOrderHeaders* para */purchase-order-management-admin/PurchaseOrderHeaders* 
+
+![Imagem de exemplo de modelos](./imgs/auth14.png)
+
+# Exercícios
+
+## Questões Teóricas
+
+- Explique a diferença entre autenticação e autorização no contexto do SAP CAP.
+
+- Descreva o papel do arquivo .cdsrc.json na configuração de segurança de um aplicativo CAP.
+
+- O que significa uma role no contexto de segurança de um aplicativo? Dê um exemplo.
+
+- Explique como a anotação @requires funciona para restringir o acesso em um serviço no SAP CAP.
+
+- Qual é o propósito da anotação @restrict e como ela difere de @requires?
+
+## Questões Práticas
+
+- Crie uma configuração no arquivo .cdsrc.json para definir um usuário de teste com a role ROLE_TEST_USER.
+
+- Defina uma entidade Employee no modelo CDS e utilize a anotação @requires para garantir que apenas usuários autenticados possam acessar essa entidade.
+
+- Utilize a anotação @restrict para permitir que apenas usuários com a role ROLE_HR_ADMIN possam criar, atualizar e deletar entidades Employee.
+
+- Implemente um handler no arquivo server.js (ou equivalente) que rejeite solicitações de leitura (READ) na entidade Employee para usuários sem a role ROLE_HR.
+
+- Dê um exemplo de como usar a anotação @readonly em uma entidade para garantir que ela seja apenas de leitura para todos os usuários, exceto para aqueles com a role ROLE_ADMIN.
