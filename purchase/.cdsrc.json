@@ -19,6 +19,26 @@
                             "email": ["dummy@dummy.com"],
                             "Groups": ["DUMMY_GROUPS"]
                         }
+                    },
+                    "test": {
+                        "password": "test",
+                        "roles": [
+                            "ROLE_HR"
+                        ],
+                        "userAttributes": {
+                            "email": ["test@test.com"],
+                            "Groups": ["TEST_GROUPS"]
+                        }
+                    },
+                    "testrh": {
+                        "password": "test",
+                        "roles": [
+                            "ROLE_HR"
+                        ],
+                        "userAttributes": {
+                            "email": ["test@test.com"],
+                            "Groups": ["TEST_GROUPS"]
+                        }
                     }
                 }
             },

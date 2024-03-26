@@ -350,7 +350,6 @@ Inclua a gestão automática dos campos de auditoria usando managed.
 
 3 - Modifique a entidade PurchaseOrderItems para incluir uma associação com a entidade Product, representando o produto associado ao item do pedido.
 
-
 # Serviços e APIs no CAP
 
 O SAP CAP permite que você crie serviços e APIs de forma fácil e eficiente, aproveitando os modelos de dados e lógica de negócios definidos em CDS. Ele simplifica o desenvolvimento de aplicativos corporativos ao fornecer uma abordagem unificada para a modelagem de dados, definição de serviços e implementação de lógica de negócios.
@@ -369,13 +368,13 @@ service PurchaseOrderManagementService {
     entity PurchaseOrderItems   as projection on models.PurchaseOrderItems;
 }
 ```
+
 - Estamos definindo um serviço chamado PurchaseOrderManagementService.
 
 - Este serviço contém duas entidades, PurchaseOrderHeaders e PurchaseOrderItems, que são projeções das entidades definidas anteriormente no esquema db.models.
 
 - As projeções são usadas para expor as entidades definidas no esquema de banco de dados (db.models) como parte do serviço PurchaseOrderManagementService.
   
-
 Ao implementar este arquivo CDS na camada "srv" do seu projeto SAP CAP, o serviço "purchase-order-management" estará disponível para uso. Isso permitirá que os clientes consumam suas APIs RESTful para acessar e manipular os dados relacionados às ordens de compra definidas nas entidades PurchaseOrderHeaders e PurchaseOrderItems.
 
 O arquivo deverá ficar deste jeito:
@@ -392,7 +391,7 @@ Se abrirmos o ambiente local no navegador, deveremos ver as entidades expostas:
 
 ![Imagem de exemplo de modelos](./imgs/api2.png)
 
-As entidades ainda estarão vazias, visto que não criamos dados para elas. Agora, vamos criar uma maneira de alimentar nossas entidades para o ambiente local. Para isso, vamos criar uma nova pasta chamada *test* na raiz do nosso projeto. 
+As entidades ainda estarão vazias, visto que não criamos dados para elas. Agora, vamos criar uma maneira de alimentar nossas entidades para o ambiente local. Para isso, vamos criar uma nova pasta chamada *test* na raiz do nosso projeto.
 
 Dentro dessa pasta iremos colocar todos os dados que queremos carregar localmente afim de conseguirmos testar nossa API. Dentro da pasta *test* vamos criar outra pasta chamada data e dentro dela vamos criar dois arquivos csv para carregar nossas entidades.
 
@@ -408,7 +407,6 @@ c2ee8b9f-783d-4a1a-bcd4-c1b9d44f5c56,COMP5,ORG5,GROUP5
 ```
 
 ![Imagem de exemplo de modelos](./imgs/test.png)
-
 
 Agora, vamos criar o arquivo *db.models.PurchaseOrderItems.csv* para alimentar os itens:
 
@@ -437,7 +435,6 @@ Agora, vamos parar nossa API e rodar novamente o comando *npm run seed && npm ru
 
 ![Imagem de exemplo de modelos](./imgs/test3.png)
 
-
 ## Testando no POSTMAN/Insomnia
 
 Neste exemplo, vamos utilizar o insomnia para testar as requests, mas você pode utilizar qualquer client para enviar/receber requests, como postman,restclient, etc.
@@ -447,7 +444,6 @@ Primeiro, vamos criar nossa coleção de requests para manter tudo organizado:
 ![Imagem de exemplo de modelos](./imgs/insomnia.png)
 
 ![Imagem de exemplo de modelos](./imgs/insomnia2.png)
-
 
 Dentro da nossa coleção, vamos criar duas pastas: *Onboarding CAP* e dentro dela *purchase-order-headers*:
 
@@ -461,7 +457,7 @@ Criadas as pastas, vamos criar o nosso endereço base do ambiente local como var
 
 ```
 {
-	"baseUrl": "localhost:4004/odata/v4"
+ "baseUrl": "localhost:4004/odata/v4"
 }
 ```
 
@@ -491,9 +487,9 @@ Na aba *body* vamos selecionar o tipo *JSON* e informar o corpo do pedido que qu
 
 ```JSON
 {
-	"company": "MYCP",
-	"purchasingOrganization": "MYPO",
-	"purchasingGroup": "MYP"
+ "company": "MYCP",
+ "purchasingOrganization": "MYPO",
+ "purchasingGroup": "MYP"
 }
 ```
 
@@ -508,25 +504,25 @@ Como estamos utilizando composição de itens, podemos criá-los através do cab
 
 ```JSON
 {
-	"company": "MYCP",
-	"purchasingOrganization": "MYPO",
-	"purchasingGroup": "MYP",
-	"items": [
-		{
-			"material": "Material_insomnia",
-			"quantity": 10,
-			"uom": "PC",
-			"netPrice": 30,
-			"center": "ABCD"
-		},
-		{
-			"material": "Material_insomnia2",
-			"quantity": 5,
-			"uom": "KG",
-			"netPrice": 500,
-			"center": "ABCD"
-		}
-	]
+ "company": "MYCP",
+ "purchasingOrganization": "MYPO",
+ "purchasingGroup": "MYP",
+ "items": [
+  {
+   "material": "Material_insomnia",
+   "quantity": 10,
+   "uom": "PC",
+   "netPrice": 30,
+   "center": "ABCD"
+  },
+  {
+   "material": "Material_insomnia2",
+   "quantity": 5,
+   "uom": "KG",
+   "netPrice": 500,
+   "center": "ABCD"
+  }
+ ]
 }
 ```
 
@@ -576,6 +572,7 @@ export default (service: Service) => {
 - *results.forEach(poHeader => poHeader.company = 'ABC');*: Para cada objeto *poHeader*, estamos atribuindo o valor *'ABC'* à propriedade *company*. Isso modifica efetivamente os resultados da consulta antes de serem devolvidos ao cliente.
 
 ```
+
 Se executarmos a consulta novamente veremos que os resultados foram alterados conforme solicitamos:
 
 ![Imagem de exemplo de modelos](./imgs/beforeRead2.png)
@@ -619,7 +616,6 @@ using { db.models } from '../../../db/models';
 
 ![Imagem de exemplo de modelos](./imgs/cds5.png)
 
-
 - Crie o script *build:cds* para transformar as models do *cds* em models *ts*:
 
 ```
@@ -648,7 +644,6 @@ export default (service: Service) => {
 
 ![Imagem de exemplo de modelos](./imgs/cds8.png)
 
-
 ## Configurando module-alias
 
 Uma outra configuração que nos ajuda a desenvolver com eficiência é a configuração de um alias para importar arquivos, assim, ao invés de termos que navegar entre as pastas usando o famoso *../* utilizaremos um atalho, por exemplo *@/pasta/arquivo_a_ser_importado*. Esta configuração é possível utilizando a biblioteca module-alias que instalamos nas primeiras aulas.
@@ -675,7 +670,6 @@ import '../configuration/module-alias';
 ```
 
 ![Imagem de exemplo de modelos](./imgs/alias3.png)
-
 
 # Esta configuração deve ser importada em *TODOS* os serviços, sempre na primeira linha do arquivo
 
@@ -720,7 +714,6 @@ Neste exemplo, estamos interceptando a requisição *POST (CREATE)* da entidade 
 Ao enviarmos a requisição *POST* sem os itens, percebemos que o retorno nos mostra os itens que salvamos através do before create
 
 ![Imagem de exemplo de modelos](./imgs/beforeCreate.png)
-
 
 ## Integrando APIs externas - SWAPI
 
@@ -793,29 +786,28 @@ O resultado nos mostra que o criador do pedido foi alterado com sucesso para *Lu
 
 ![Imagem de exemplo de modelos](./imgs/apiExterna3.png)
 
-
 ## Questões Práticas
 
 - Criando um Modelo de Dados em CDS
 
-    - Crie um arquivo CDS para modelar entidades relacionadas a EmployeeManagement, incluindo pelo menos duas entidades: Employees e Departments. As entidades devem ter relações apropriadas e campos comuns como id, name, email para Employees e id, departmentName para Departments.
+  - Crie um arquivo CDS para modelar entidades relacionadas a EmployeeManagement, incluindo pelo menos duas entidades: Employees e Departments. As entidades devem ter relações apropriadas e campos comuns como id, name, email para Employees e id, departmentName para Departments.
 
 - Definindo um Serviço com Projeções
 
-    - Com base no modelo criado na questão anterior, defina um serviço chamado EmployeeManagementService que expõe as entidades Employees e Departments usando projeções.
+  - Com base no modelo criado na questão anterior, defina um serviço chamado EmployeeManagementService que expõe as entidades Employees e Departments usando projeções.
 
 - Implementando Lógica Customizada Antes da Criação de Dados
 
-    - Utilizando o serviço EmployeeManagementService, escreva um trecho de código em um arquivo .ts que modifica o objeto de requisição antes de criar um novo registro de Employee. Por exemplo, adicione uma validação ou modifique um campo automaticamente.
+  - Utilizando o serviço EmployeeManagementService, escreva um trecho de código em um arquivo .ts que modifica o objeto de requisição antes de criar um novo registro de Employee. Por exemplo, adicione uma validação ou modifique um campo automaticamente.
 
 - Testando o Serviço com Insomnia ou Postman
 
-    - Descreva os passos para testar a criação de um novo registro na entidade Employees usando Insomnia ou Postman. Inclua um exemplo de corpo da requisição JSON para criar um novo Employee.
+  - Descreva os passos para testar a criação de um novo registro na entidade Employees usando Insomnia ou Postman. Inclua um exemplo de corpo da requisição JSON para criar um novo Employee.
 
 - Lógica AFTER READ para Modificar Resultados
 
-    - Implemente uma função after READ para a entidade Employees que modifica o campo email para mostrar apenas o domínio do email (após o @) nos resultados da leitura.
-  
+  - Implemente uma função after READ para a entidade Employees que modifica o campo email para mostrar apenas o domínio do email (após o @) nos resultados da leitura.
+
 # Segurança e Autorização no CAP
 
 Vamos mergulhar na configuração de segurança e autorização em seu aplicativo SAP CAP, utilizando o arquivo .cdsrc.json como ponto de partida. Este módulo é essencial para garantir que apenas usuários autorizados acessem e manipulem dados específicos dentro do seu aplicativo. No CAP, proteger seu aplicativo contra acessos não autorizados é primordial. A segurança possui dois pilares principais: *autenticação* (a confirmação de quem você é) e *autorização* (o que você está permitido a fazer).
@@ -829,7 +821,6 @@ Para este curso, utilizaremos uma configuração de segurança definida no arqui
 Nas aulas anteriores nós já configuramos um usuário para fins de teste, o dummy:
 
 ![Imagem de exemplo de modelos](./imgs/auth.png)
-
 
 - A autenticação básica é um método simples que requer nome de usuário e senha para acessar o aplicativo.
 
@@ -876,9 +867,9 @@ service PurchaseOrderManagementService {
 }
 ```
 
-Perceba que a anotação está sendo aplicada somente para a entidade *PurchaseOrderHeaders*. Se quisermos aplicar para a entidade *PurchaseOrderItems* precisaríamos criar a mesma lógica de restrict para ela. 
+Perceba que a anotação está sendo aplicada somente para a entidade *PurchaseOrderHeaders*. Se quisermos aplicar para a entidade *PurchaseOrderItems* precisaríamos criar a mesma lógica de restrict para ela.
 
-Note que tudo continuou funcionando normalmente para nosso usuário *dummy*. 
+Note que tudo continuou funcionando normalmente para nosso usuário *dummy*.
 
 ![Imagem de exemplo de modelos](./imgs/auth5.png)
 
@@ -942,7 +933,7 @@ service PurchaseOrderManagementAdminService {
 
 Primeiro, vamos rodar novamente o comando *npm run seed* no terminal.
 
-Depois, no insomnia, vamos alterar nossa chamada do método create de */purchase-order-management/PurchaseOrderHeaders* para */purchase-order-management-admin/PurchaseOrderHeaders* 
+Depois, no insomnia, vamos alterar nossa chamada do método create de */purchase-order-management/PurchaseOrderHeaders* para */purchase-order-management-admin/PurchaseOrderHeaders*
 
 ![Imagem de exemplo de modelos](./imgs/auth14.png)
 
@@ -952,13 +943,24 @@ Depois, no insomnia, vamos alterar nossa chamada do método create de */purchase
 
 - Explique a diferença entre autenticação e autorização no contexto do SAP CAP.
 
+    *autenticação* (a confirmação de quem você é) e *autorização* (o que você está permitido a fazer).
+
 - Descreva o papel do arquivo .cdsrc.json na configuração de segurança de um aplicativo CAP.
+    permite uma rápida implementação de mecanismos de segurança em um ambiente de desenvolvimento local.
 
 - O que significa uma role no contexto de segurança de um aplicativo? Dê um exemplo.
+    é como um perfil de acesso que define o que diferentes tipos de usuarios podem fazer dentro do aplicativo
+
+    imagine um aplicativo como uma casa. As “roles” são como as chaves para diferentes portas nessa casa. A chave do administrador (ou ROLE_DUMMY_ADMIN) pode abrir todas as portas, enquanto a chave do usuário (ou ROLE_DUMMY_USER) pode abrir apenas algumas portas. Assim, a “role” determina quais “portas” (ou partes do aplicativo) um usuário pode acessar.
 
 - Explique como a anotação @requires funciona para restringir o acesso em um serviço no SAP CAP.
+    Ela define as permissões necessárias para acessar um serviço ou entidade.
+    Por exemplo, se você quiser que um serviço seja acessível apenas por usuários autenticados, você pode anotar o serviço com @requires: 'authenticated-user'. Isso significa que apenas usuários que estão logados (ou seja, autenticados) podem acessar esse serviço.
 
 - Qual é o propósito da anotação @restrict e como ela difere de @requires?
+    Ela permite especificar restrições de acesso com base em operações específicas de CRUD (Criar, Ler, Atualizar, Excluir) e roles específicas.
+
+    você pode querer que apenas usuários com a role ROLE_DUMMY_ADMIN possam criar, atualizar ou excluir entidades, enquanto usuários com a role ROLE_DUMMY_USER podem apenas ler as entidades. Isso pode ser alcançado usando a anotação @restrict.
 
 ## Questões Práticas
 

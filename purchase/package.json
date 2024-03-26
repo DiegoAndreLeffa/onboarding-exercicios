@@ -9,6 +9,7 @@
     "@sap-cloud-sdk/http-client": "^3.13.0",
     "@sap-cloud-sdk/resilience": "^3.13.0",
     "@sap/cds": "^7",
+    "@sap/cds-dk": "^7.8.0",
     "@sweet-monads/either": "3.3.1",
     "express": "^4",
     "module-alias": "2.2.3"
@@ -30,7 +31,7 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "dev": "NODE_ENV=LOCAL cds-ts serve --from ./srv/main/routes --with-mocks",
+    "dev": "NODE_ENV=LOCAL cds-ts serve --from ./srv/main/routes --with-mocks --watch",
     "seed": "cds deploy ./srv/main/routes -2 sqlite:sqlite.db --with-mocks --no-save",
     "build:cds": "cds2types -c ./srv/main/routes -o ./srv/common/entities/db/models.ts -d"
   }
