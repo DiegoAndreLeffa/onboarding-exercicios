@@ -6,8 +6,3 @@ service EmployeeManagementService {
     entity Departments          as projection on models.Departments;
 }
 
-@requires: 'ROLE_DUMMY_ADMIN'
-service PurchaseOrderManagementAdminService {
-    entity PurchaseOrderHeaders as projection on models.PurchaseOrderHeaders;
-    entity PurchaseOrderItems   as projection on models.PurchaseOrderItems;
-}
