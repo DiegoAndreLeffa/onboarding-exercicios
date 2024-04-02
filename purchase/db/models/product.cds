@@ -1,5 +1,5 @@
 using {managed} from '@sap/cds/common';
-using {db.models} from '.';
+// using {db.models} from '.';
 
 namespace db.models;
 
@@ -8,5 +8,5 @@ entity Product : managed {
         name        : String;
         description : String;
         price       : String;
-        supplierId  : Association to models.Supplier;
+        // supplierId  : Association to models.Supplier;
 }

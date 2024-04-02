@@ -4,7 +4,6 @@ namespace db.models;
 
 entity Supplier : managed {
     key id       : UUID;
-        name     : String(40);
-        location : String(50);
-
+    name         : String(40);
+    location     : String(50);
 }

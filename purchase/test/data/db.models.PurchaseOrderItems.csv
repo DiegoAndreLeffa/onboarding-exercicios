@@ -1,4 +1,4 @@
-id,headerId_id,material,quantity,uom,netPrice,center
+id,headerId_ID,material,quantity,uom,netPrice,center
 ae51200c-6a9e-4d80-aa3f-1b68ffae20f7,fa4b5f4e-7758-4d5d-a5f3-081d4eac2c39,MATERIAL1,10,PC,25.00,CENTRO1
 d068d120-105c-4b92-8980-4bcf16d920e5,fa4b5f4e-7758-4d5d-a5f3-081d4eac2c39,MATERIAL2,20,KG,35.50,CENTRO2
 e85c7326-52ee-4ed6-b01f-fde5b9b38825,fa4b5f4e-7758-4d5d-a5f3-081d4eac2c39,MATERIAL3,15,M,45.75,CENTRO3
